@@ -1,0 +1,93 @@
+---
+
+##
+# Defaults for SeaweedFS
+##
+
+seaweedfs_version: 3.09
+seaweedfs_user: seaweedfs
+seaweedfs_group: seaweedfs
+
+seaweedfs_location: "/usr/local/bin"
+seaweedfs_etc: "/etc/seaweedfs"
+seaweedfs_master_path: "/var/seaweedfs/master"
+seaweedfs_filer_path: "/var/seaweedfs/filer"
+
+# List of paths to hold volumes
+seaweedfs_volume_path:
+  - /var/seaweedfs/volume
+# Optional list of disk tags, leave undefined if not required
+#seaweedfs_volume_disk:
+#  - ssd
+
+# Maintenance scripts to run on master
+seaweedfs_maintenance_scripts:
+  - lock
+  - ec.encode -fullPercent=95 -quietFor=1h
+  - ec.rebuild -force
+  - ec.balance -force
+  - volume.deleteEmpty -quietFor=24h -force
+  - volume.balance -force
+  - volume.fix.replication
+  - s3.clean.uploads -timeAgo=24h
+  - unlock
+
+seaweedfs_maintenance_sleep_minutes: 17
+
+# Number of logical volumes to create once no more writable volumes are available
+seaweedfs_replication_copy_1: 7   # Create 1 x n volumes
+seaweedfs_replication_copy_2: 6   # Create 2 x n volumes
+seaweedfs_replication_copy_3: 3   # Create 3 x n volumes
+seaweedfs_replication_copy_other: 1  # Create n x n volumes
+
+seaweedfs_volume_size_limit: 30000
+seaweedfs_default_replication: "000"
+
+seaweedfs_bind_ip: 0.0.0.0
+seaweedfs_ip: "{{ ansible_default_ipv4.address }}"
+
+seaweedfs_s3_enabled: false
+
+seaweedfs_master_port: 9333
+seaweedfs_filer_port: 8888
+seaweedfs_s3_port: 8333
+seaweedfs_volume_port: 8080
+
+# Define to set the datacenter and rack
+#seaweedfs_datacenter: DefaultDataCenter
+#seaweedfs_rack: DefaultRack
+
+# Define to apply a group to the filers
+#seaweedfs_filer_group: DefaultGroup
+
+seaweedfs_encrypt_data: false
+
+# Security
+seaweedfs_security_jwt: ""
+seaweedfs_security_jwt_read: ""
+seaweedfs_securyty_jwt_filer: ""
+seaweedfs_securyty_jwt_filer_read: ""
+seaweedfs_security_ui: true
+
+seaweedfs_ca: ""
+seaweedfs_volume_cert: ""
+seaweedfs_volume_key: ""
+seaweedfs_master_cert: ""
+seaweedfs_master_key: ""
+seaweedfs_filer_cert: ""
+seaweedfs_filer_key: ""
+seaweedfs_client_cert: ""
+seaweedfs_client_key: ""
+
+# filer.meta.backup configuration
+seaweedfs_mata_backup_filer: "localhost:{{ seaweedfs_filer_port }}"
+seaweedfs_meta_backup_toml: backup-filer.toml
+seaweedfs_meta_backup_dir: /
+
+# Download location
+seaweedfs_download_url: "https://github.com/chrislusf/seaweedfs/releases/download/{{ seaweedfs_version }}/{{ ansible_system|lower }}_{{ seaweedfs_arch_map[ansible_architecture] }}.tar.gz"
+seaweedfs_arch_map:
+  x86_64: 'amd64'
+  aarch64: 'arm64'
+  armv7l: 'arm'
+  armv6l: 'arm'

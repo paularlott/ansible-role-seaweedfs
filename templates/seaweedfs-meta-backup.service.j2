@@ -1,0 +1,19 @@
+[Unit]
+Description=Seaweed Filer Meta Backup
+After=network.target
+
+[Service]
+Type=simple
+Restart=on-failure
+User={{ seaweedfs_user }}
+Group={{ seaweedfs_group | default(omit) }}
+WorkingDirectory=/tmp
+SyslogIdentifier=seaweedfs-filer
+KillSignal=SIGTERM
+ExecStart={{ seaweedfs_location }}/weed -logtostderr filer.meta.backup \
+  -config {{ seaweedfs_etc }}/{{ seaweedfs_meta_backup_toml }} \
+  -filerDir {{ seaweedfs_meta_backup_dir }} \
+  -filer {{ seaweedfs_mata_backup_filer }}
+
+[Install]
+WantedBy=multi-user.target

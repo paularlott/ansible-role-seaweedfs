@@ -1,0 +1,21 @@
+[Unit]
+Description=Seaweed Filer
+After=network.target
+
+[Service]
+Type=simple
+Restart=on-failure
+User={{ seaweedfs_user }}
+Group={{ seaweedfs_group | default(omit) }}
+WorkingDirectory={{ seaweedfs_filer_path }}
+SyslogIdentifier=seaweedfs-filer
+KillSignal=SIGTERM
+ExecStart={{ seaweedfs_location }}/weed -logtostderr filer \
+  -ip {{ seaweedfs_ip }} -ip.bind {{ seaweedfs_bind_ip }} {% if seaweedfs_filer_group is defined %}-filerGroup {{ seaweedfs_filer_group }} {% endif %}\
+  -port {{ seaweedfs_filer_port }} -port.grpc 1{{ seaweedfs_filer_port }} \
+  -defaultReplicaPlacement={{ seaweedfs_default_replication }} {% if seaweedfs_encrypt_data %}-encryptVolumeData {% endif %}\
+  {% if seaweedfs_s3_enabled %}-s3 {% if seaweedfs_s3_json is defined %}-s3.config {{ seaweedfs_etc }}/s3config.json{% endif %} -s3.port {{ seaweedfs_s3_port}} -s3.port.grpc 1{{ seaweedfs_s3_port }}{% endif %} \
+  {% if seaweedfs_datacenter is defined %}-dataCenter={{ seaweedfs_datacenter }} {% endif %}{% if seaweedfs_rack is defined %}-rack={{ seaweedfs_rack }} {% endif %}-master={{ master_ips }}
+
+[Install]
+WantedBy=multi-user.target

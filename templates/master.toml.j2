@@ -1,0 +1,25 @@
+[master.maintenance]
+scripts = """
+{{ seaweedfs_maintenance_scripts | join('\n')}}
+"""
+sleep_minutes = {{ seaweedfs_maintenance_sleep_minutes }}
+
+[master.sequencer]
+type = "raft"     # Choose [raft|snowflake] type for storing the file id sequence
+# when sequencer.type = snowflake, the snowflake id must be different from other masters
+sequencer_snowflake_id = 0     # any number between 1~1023
+
+# create this number of logical volumes if no more writable volumes
+# count_x means how many copies of data.
+# e.g.:
+#   000 has only one copy, copy_1
+#   010 and 001 has two copies, copy_2
+#   011 has only 3 copies, copy_3
+[master.volume_growth]
+copy_1 = {{ seaweedfs_replication_copy_1 }}
+copy_2 = {{ seaweedfs_replication_copy_2 }}
+copy_3 = {{ seaweedfs_replication_copy_3 }}
+copy_other = {{ seaweedfs_replication_copy_other }}
+
+[master.replication]
+treat_replication_as_minimums = false

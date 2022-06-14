@@ -1,0 +1,19 @@
+galaxy_info:
+  role_name: seaweedfs
+  author: Paul Arlott
+  description: Deploy SeaweedFS a simple and highly scalable distributed file system.a
+  license: MIT
+  min_ansible_version: "2.8"
+#  github_branch: master
+  issue_tracker_url: https://github.com/paularlott/ansible-role-seaweedfs/issues
+  platforms:
+    - name: Ubuntu
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+  galaxy_tags:
+    - seaweedfs
+
+dependencies: []

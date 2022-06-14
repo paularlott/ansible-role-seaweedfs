@@ -1,0 +1,44 @@
+---
+
+##
+# Install / upgrade SeaweedFS master
+##
+
+- name: Ensure etc path exists
+  file:
+    path: "{{ seaweedfs_etc }}"
+    recurse: true
+    state: directory
+    owner: "{{ seaweedfs_user | default('root') }}"
+    mode: "700"
+
+- name: Ensure master path exists
+  file:
+    path: "{{ seaweedfs_master_path }}"
+    recurse: true
+    state: directory
+    owner: "{{ seaweedfs_user | default('root') }}"
+    mode: "700"
+
+- name: Copy master.toml
+  template:
+    src: master.toml.j2
+    dest: "{{ seaweedfs_etc }}/master.toml"
+    mode: 0444
+  notify:
+    - restart seaweedfs-master.service
+
+- name: Copy seaweedfs-master.service
+  template:
+    src: seaweedfs-master.service.j2
+    dest: /etc/systemd/system/seaweedfs-master.service
+    mode: 0444
+  notify:
+    - restart seaweedfs-master.service
+
+- name: Enable seaweedfs-master.service
+  systemd:
+    name: seaweedfs-master.service
+    enabled: true
+    state: started
+    daemon_reload: true

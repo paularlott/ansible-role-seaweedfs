@@ -1,0 +1,55 @@
+---
+
+##
+# Install / upgrade SeaweedFS filer
+##
+
+- name: Ensure etc path exists
+  file:
+    path: "{{ seaweedfs_etc }}"
+    recurse: true
+    state: directory
+    owner: "{{ seaweedfs_user | default('root') }}"
+    mode: "700"
+
+- name: Ensure filer path exists
+  file:
+    path: "{{ seaweedfs_filer_path }}"
+    recurse: true
+    state: directory
+    owner: "{{ seaweedfs_user | default('root') }}"
+    mode: "700"
+
+# Use memory if filer.toml file not given
+- name: Copy filer.toml
+  template:
+    src: "{{ seaweedfs_filer_toml }}"
+    dest: "{{ seaweedfs_etc }}/filer.toml"
+    mode: 0444
+  notify:
+    - restart seaweedfs-filer.service
+  when: seaweedfs_filer_toml is defined
+
+- name: Copy s3config.json
+  template:
+    src: "{{ seaweedfs_s3_json }}"
+    dest: "{{ seaweedfs_etc }}/s3config.json"
+    mode: 0444
+  notify:
+    - restart seaweedfs-filer.service
+  when: seaweedfs_s3_json is defined
+
+- name: Copy seaweedfs-filer.service
+  template:
+    src: seaweedfs-filer.service.j2
+    dest: /etc/systemd/system/seaweedfs-filer.service
+    mode: 0444
+  notify:
+    - restart seaweedfs-filer.service
+
+- name: Enable seaweedfs-filer.service
+  systemd:
+    name: seaweedfs-filer.service
+    enabled: true
+    state: started
+    daemon_reload: true

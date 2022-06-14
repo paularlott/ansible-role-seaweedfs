@@ -1,0 +1,171 @@
+---
+
+##
+# Install / upgrade SeaweedFS common components
+##
+
+- name: Create group for SeaweedFS
+  group:
+    name: "{{ seaweedfs_group }}"
+    state: present
+    system: true
+  when: seaweedfs_group is defined and (is_master or is_volume or is_filer)
+
+- name: Create user for SeaweedFS
+  user:
+    name: "{{ seaweedfs_user }}"
+    shell: /bin/false
+    group: "{{ seaweedfs_group | default(omit) }}"
+    groups: "{{ seaweedfs_groups | default(omit) }}"
+    state: present
+    system: true
+    create_home: false
+  when: is_master or is_volume or is_filer
+
+- name: Increase file open limit
+  pam_limits:
+    domain: "{{ seaweedfs_user }}"
+    limit_type: soft
+    limit_item: nofile
+    value: 10240
+  when: is_master or is_volume or is_filer
+
+- name: Check if SeaweedFS present
+  stat:
+    path: "{{ seaweedfs_location }}/weed"
+  register: stat_result
+
+- name: Query for version
+  command:
+    cmd: weed version
+  register: version_check
+  changed_when: false
+  when: stat_result.stat.exists == true
+
+- name: Extract version
+  set_fact:
+    installed_version: "{{ version_check.stdout.split()[2] }}"
+  when: stat_result.stat.exists == true
+
+- name: Download SeaweedFS archive
+  unarchive:
+    src: "{{ seaweedfs_download_url }}"
+    dest: "{{ seaweedfs_location }}"
+    remote_src: yes
+  when: stat_result.stat.exists == false or installed_version is version(seaweedfs_version, '<>')
+
+- name: Create a symbolic link for mount
+  file:
+    src: "{{ seaweedfs_location }}/weed"
+    dest: /sbin/mount.weed
+    state: link
+
+- name: Copy CA
+  copy:
+    src: "seaweedfs/{{ seaweedfs_ca }}"
+    dest: "{{ seaweedfs_etc }}/{{ seaweedfs_ca }}"
+  notify:
+    - restart seaweedfs-master.service
+    - restart seaweedfs-volume.service
+    - restart seaweedfs-filer.service
+    - restart seaweedfs-meta-backup.service
+  when: seaweedfs_ca | length > 0
+
+- name: Copy volume grpc cert
+  copy:
+    src: "seaweedfs/{{ seaweedfs_volume_cert }}"
+    dest: "{{ seaweedfs_etc }}/{{ seaweedfs_volume_cert }}"
+  notify:
+    - restart seaweedfs-master.service
+    - restart seaweedfs-volume.service
+    - restart seaweedfs-filer.service
+    - restart seaweedfs-meta-backup.service
+  when: seaweedfs_volume_cert | length > 0
+
+- name: Copy volume grpc key
+  copy:
+    src: "seaweedfs/{{ seaweedfs_volume_key }}"
+    dest: "{{ seaweedfs_etc }}/{{ seaweedfs_volume_key }}"
+  notify:
+    - restart seaweedfs-master.service
+    - restart seaweedfs-volume.service
+    - restart seaweedfs-filer.service
+    - restart seaweedfs-meta-backup.service
+  when: seaweedfs_volume_key | length > 0
+
+- name: Copy master grpc cert
+  copy:
+    src: "seaweedfs/{{ seaweedfs_master_cert }}"
+    dest: "{{ seaweedfs_etc }}/{{ seaweedfs_master_cert }}"
+  notify:
+    - restart seaweedfs-master.service
+    - restart seaweedfs-volume.service
+    - restart seaweedfs-filer.service
+    - restart seaweedfs-meta-backup.service
+  when: seaweedfs_master_cert | length > 0
+
+- name: Copy master grpc key
+  copy:
+    src: "seaweedfs/{{ seaweedfs_master_key }}"
+    dest: "{{ seaweedfs_etc }}/{{ seaweedfs_master_key }}"
+  notify:
+    - restart seaweedfs-master.service
+    - restart seaweedfs-volume.service
+    - restart seaweedfs-filer.service
+    - restart seaweedfs-meta-backup.service
+  when: seaweedfs_master_key | length > 0
+
+- name: Copy filer grpc cert
+  copy:
+    src: "seaweedfs/{{ seaweedfs_filer_cert }}"
+    dest: "{{ seaweedfs_etc }}/{{ seaweedfs_filer_cert }}"
+  notify:
+    - restart seaweedfs-master.service
+    - restart seaweedfs-volume.service
+    - restart seaweedfs-filer.service
+    - restart seaweedfs-meta-backup.service
+  when: seaweedfs_filer_cert | length > 0
+
+- name: Copy filer grpc key
+  copy:
+    src: "seaweedfs/{{ seaweedfs_filer_key }}"
+    dest: "{{ seaweedfs_etc }}/{{ seaweedfs_filer_key }}"
+  notify:
+    - restart seaweedfs-master.service
+    - restart seaweedfs-volume.service
+    - restart seaweedfs-filer.service
+    - restart seaweedfs-meta-backup.service
+  when: seaweedfs_filer_key | length > 0
+
+- name: Copy client grpc cert
+  copy:
+    src: "seaweedfs/{{ seaweedfs_client_cert }}"
+    dest: "{{ seaweedfs_etc }}/{{ seaweedfs_client_cert }}"
+  notify:
+    - restart seaweedfs-master.service
+    - restart seaweedfs-volume.service
+    - restart seaweedfs-filer.service
+    - restart seaweedfs-meta-backup.service
+  when: seaweedfs_client_cert | length > 0
+
+- name: Copy client grpc key
+  copy:
+    src: "seaweedfs/{{ seaweedfs_client_key }}"
+    dest: "{{ seaweedfs_etc }}/{{ seaweedfs_client_key }}"
+  notify:
+    - restart seaweedfs-master.service
+    - restart seaweedfs-volume.service
+    - restart seaweedfs-filer.service
+    - restart seaweedfs-meta-backup.service
+  when: seaweedfs_client_key | length > 0
+
+- name: Copy security.toml
+  template:
+    src: "security.toml.j2"
+    dest: "{{ seaweedfs_etc }}/security.toml"
+    mode: 0444
+  notify:
+    - restart seaweedfs-master.service
+    - restart seaweedfs-volume.service
+    - restart seaweedfs-filer.service
+    - restart seaweedfs-meta-backup.service

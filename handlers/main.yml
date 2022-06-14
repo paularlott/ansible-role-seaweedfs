@@ -1,0 +1,32 @@
+---
+
+- name: restart seaweedfs-master.service
+  systemd:
+    name: seaweedfs-master.service
+    state: restarted
+    daemon_reload: true
+  throttle: 1
+  when: groups['seaweedfs_master'] is defined and inventory_hostname in groups['seaweedfs_master']
+
+- name: restart seaweedfs-volume.service
+  systemd:
+    name: seaweedfs-volume.service
+    state: restarted
+    daemon_reload: true
+  throttle: 1
+  when: groups['seaweedfs_volume'] is defined and inventory_hostname in groups['seaweedfs_volume']
+
+- name: restart seaweedfs-filer.service
+  systemd:
+    name: seaweedfs-filer.service
+    state: restarted
+    daemon_reload: true
+  throttle: 1
+  when: groups['seaweedfs_filer'] is defined and inventory_hostname in groups['seaweedfs_filer']
+
+- name: restart seaweedfs-meta-backup.service
+  systemd:
+    name: seaweedfs-meta-backup.service
+    state: restarted
+    daemon_reload: true
+  when: groups['seaweedfs_meta_backup'] is defined and inventory_hostname in groups['seaweedfs_meta_backup'] and seaweedfs_backup_filer_toml is defined

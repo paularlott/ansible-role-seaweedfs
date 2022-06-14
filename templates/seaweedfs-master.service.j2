@@ -1,0 +1,20 @@
+[Unit]
+Description=SeaweedFS Master
+After=network.target
+
+[Service]
+Type=simple
+User={{ seaweedfs_user }}
+Group={{ seaweedfs_group | default(omit) }}
+Restart=on-failure
+SyslogIdentifier=seaweedfs-master
+KillSignal=SIGTERM
+ExecStart={{ seaweedfs_location }}/weed -logtostderr master \
+  -ip {{ seaweedfs_ip }} -ip.bind {{ seaweedfs_bind_ip }} \
+  -port {{ seaweedfs_master_port }} -port.grpc 1{{ seaweedfs_master_port }} \
+  -mdir={{ seaweedfs_master_path }} -defaultReplication={{ seaweedfs_default_replication }} \
+  -volumeSizeLimitMB={{ seaweedfs_volume_size_limit }} \
+  -peers={{ master_ips }}
+
+[Install]
+WantedBy=multi-user.target

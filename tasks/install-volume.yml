@@ -1,0 +1,29 @@
+---
+
+##
+# Install / upgrade SeaweedFS volume
+##
+
+- name: Ensure volume path exists
+  file:
+    path: "{{ item }}"
+    recurse: true
+    state: directory
+    owner: "{{ seaweedfs_user | default('root') }}"
+    mode: "700"
+  with_items: "{{ seaweedfs_volume_path }}"
+
+- name: Copy seaweedfs-volume.service
+  template:
+    src: seaweedfs-volume.service.j2
+    dest: /etc/systemd/system/seaweedfs-volume.service
+    mode: 0444
+  notify:
+    - restart seaweedfs-volume.service
+
+- name: Enable seaweedfs-volume.service
+  systemd:
+    name: seaweedfs-volume.service
+    enabled: true
+    state: started
+    daemon_reload: true
