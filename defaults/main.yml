@@ -4,7 +4,7 @@
 # Defaults for SeaweedFS
 ##
 
-seaweedfs_version: 3.09
+seaweedfs_version: 3.11
 seaweedfs_user: seaweedfs
 seaweedfs_group: seaweedfs
 
