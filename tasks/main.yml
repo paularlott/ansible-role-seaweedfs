@@ -6,25 +6,25 @@
     is_volume: false
     is_filer: false
     installed_version: "N/A"
-    master_ips: "{{ groups['seaweedfs_master'] | map('extract', hostvars, ['ansible_default_ipv4' ,'address']) | join(':{{ seaweedfs_master_port }},') }}:{{ seaweedfs_master_port }}"
+    master_ips: "{{ groups['seaweedfs_masters'] | map('extract', hostvars, ['ansible_default_ipv4' ,'address']) | join(':{{ seaweedfs_master_port }},') }}:{{ seaweedfs_master_port }}"
   tags: seaweedfs
 
 - name: Test if master install
   set_fact:
     is_master: true
-  when: groups['seaweedfs_master'] is defined and inventory_hostname in groups['seaweedfs_master']
+  when: groups['seaweedfs_masters'] is defined and inventory_hostname in groups['seaweedfs_masters']
   tags: seaweedfs
 
 - name: Test if volume install
   set_fact:
     is_volume: true
-  when: groups['seaweedfs_volume'] is defined and inventory_hostname in groups['seaweedfs_volume']
+  when: groups['seaweedfs_volumes'] is defined and inventory_hostname in groups['seaweedfs_volumes']
   tags: seaweedfs
 
 - name: Test if filer install
   set_fact:
     is_filer: true
-  when: groups['seaweedfs_filer'] is defined and inventory_hostname in groups['seaweedfs_filer']
+  when: groups['seaweedfs_filers'] is defined and inventory_hostname in groups['seaweedfs_filers']
   tags: seaweedfs
 
 - name: Install SeaweedFS common components
@@ -48,5 +48,5 @@
 
 - name: Install SeaweedFS filer meta backup
   include_tasks: install-meta-backup.yml
-  when: groups['seaweedfs_meta_backup'] is defined and inventory_hostname in groups['seaweedfs_meta_backup'] and seaweedfs_backup_filer_toml is defined
+  when: groups['seaweedfs_meta_backups'] is defined and inventory_hostname in groups['seaweedfs_meta_backups'] and seaweedfs_backup_filer_toml is defined
   tags: seaweedfs
