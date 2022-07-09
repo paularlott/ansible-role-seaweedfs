@@ -4,14 +4,6 @@
 # Install / upgrade SeaweedFS filer
 ##
 
-- name: Ensure etc path exists
-  file:
-    path: "{{ seaweedfs_etc }}"
-    recurse: true
-    state: directory
-    owner: "{{ seaweedfs_user | default('root') }}"
-    mode: "700"
-
 - name: Ensure filer path exists
   file:
     path: "{{ seaweedfs_filer_path }}"
