@@ -11,6 +11,7 @@
     state: directory
     owner: "{{ seaweedfs_user | default('root') }}"
     mode: "700"
+  tags: seaweedfs
 
 # Use memory if filer.toml file not given
 - name: Copy filer.toml
@@ -21,6 +22,7 @@
   notify:
     - restart seaweedfs-filer.service
   when: seaweedfs_filer_toml is defined
+  tags: seaweedfs
 
 - name: Copy s3config.json
   template:
@@ -30,6 +32,7 @@
   notify:
     - restart seaweedfs-filer.service
   when: seaweedfs_s3_json is defined
+  tags: seaweedfs
 
 - name: Copy seaweedfs-filer.service
   template:
@@ -38,6 +41,7 @@
     mode: 0444
   notify:
     - restart seaweedfs-filer.service
+  tags: seaweedfs
 
 - name: Enable seaweedfs-filer.service
   systemd:
@@ -45,3 +49,4 @@
     enabled: true
     state: started
     daemon_reload: true
+  tags: seaweedfs

@@ -11,6 +11,7 @@
     state: directory
     owner: "{{ seaweedfs_user | default('root') }}"
     mode: "700"
+  tags: seaweedfs
 
 - name: Copy master.toml
   template:
@@ -19,6 +20,7 @@
     mode: 0444
   notify:
     - restart seaweedfs-master.service
+  tags: seaweedfs
 
 - name: Copy seaweedfs-master.service
   template:
@@ -27,6 +29,7 @@
     mode: 0444
   notify:
     - restart seaweedfs-master.service
+  tags: seaweedfs
 
 - name: Enable seaweedfs-master.service
   systemd:
@@ -34,3 +37,4 @@
     enabled: true
     state: started
     daemon_reload: true
+  tags: seaweedfs

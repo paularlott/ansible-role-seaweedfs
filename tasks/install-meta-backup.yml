@@ -11,6 +11,7 @@
     state: directory
     owner: "{{ seaweedfs_user | default('root') }}"
     mode: "700"
+  tags: seaweedfs
 
 # Use memory if filer.toml file not given
 - name: Copy backup-filer.toml
@@ -20,6 +21,7 @@
     mode: 0644
   notify:
     - restart seaweedfs-meta-backup.service
+  tags: seaweedfs
 
 - name: Copy seaweedfs-meta-backup.service
   template:
@@ -28,6 +30,7 @@
     mode: 0444
   notify:
     - restart seaweedfs-meta-backup.service
+  tags: seaweedfs
 
 - name: Enable seaweedfs-meta-backup.service
   systemd:
@@ -35,3 +38,4 @@
     enabled: true
     state: started
     daemon_reload: true
+  tags: seaweedfs

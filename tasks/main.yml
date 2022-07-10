@@ -50,3 +50,8 @@
   include_tasks: install-meta-backup.yml
   when: groups['seaweedfs_meta_backups'] is defined and inventory_hostname in groups['seaweedfs_meta_backups'] and seaweedfs_backup_filer_toml is defined
   tags: seaweedfs
+
+- name: Install Proxmox Storage Plugin
+  include_tasks: install-proxmox-plugin.yml
+  when: groups['seaweedfs_proxmox'] is defined and inventory_hostname in groups['seaweedfs_proxmox']
+  tags: seaweedfs

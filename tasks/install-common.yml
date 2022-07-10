@@ -10,6 +10,7 @@
     state: present
     system: true
   when: seaweedfs_group is defined and (is_master or is_volume or is_filer)
+  tags: seaweedfs
 
 - name: Create user for SeaweedFS
   user:
@@ -21,6 +22,7 @@
     system: true
     create_home: false
   when: is_master or is_volume or is_filer
+  tags: seaweedfs
 
 - name: Increase file open limit
   pam_limits:
@@ -29,6 +31,7 @@
     limit_item: nofile
     value: 10240
   when: is_master or is_volume or is_filer
+  tags: seaweedfs
 
 - name: Ensure etc path exists
   file:
@@ -37,11 +40,24 @@
     state: directory
     owner: "{{ seaweedfs_user | default('root') }}"
     mode: "700"
+  when: is_master or is_volume or is_filer
+  tags: seaweedfs
+
+- name: Ensure etc path exists
+  file:
+    path: "{{ seaweedfs_etc }}"
+    recurse: true
+    state: directory
+    owner: "root"
+    mode: "700"
+  when: not is_master and not is_volume and not is_filer
+  tags: seaweedfs
 
 - name: Check if SeaweedFS present
   stat:
     path: "{{ seaweedfs_location }}/weed"
   register: stat_result
+  tags: seaweedfs
 
 - name: Query for version
   command:
@@ -49,11 +65,13 @@
   register: version_check
   changed_when: false
   when: stat_result.stat.exists == true
+  tags: seaweedfs
 
 - name: Extract version
   set_fact:
     installed_version: "{{ version_check.stdout.split()[2] }}"
   when: stat_result.stat.exists == true
+  tags: seaweedfs
 
 - name: Download SeaweedFS archive
   unarchive:
@@ -61,12 +79,14 @@
     dest: "{{ seaweedfs_location }}"
     remote_src: yes
   when: stat_result.stat.exists == false or installed_version is version(seaweedfs_version, '<>')
+  tags: seaweedfs
 
 - name: Create a symbolic link for mount
   file:
     src: "{{ seaweedfs_location }}/weed"
     dest: /sbin/mount.weed
     state: link
+  tags: seaweedfs
 
 - name: Copy CA
   copy:
@@ -78,6 +98,7 @@
     - restart seaweedfs-filer.service
     - restart seaweedfs-meta-backup.service
   when: seaweedfs_ca | length > 0
+  tags: seaweedfs
 
 - name: Copy volume grpc cert
   copy:
@@ -89,6 +110,7 @@
     - restart seaweedfs-filer.service
     - restart seaweedfs-meta-backup.service
   when: seaweedfs_volume_cert | length > 0
+  tags: seaweedfs
 
 - name: Copy volume grpc key
   copy:
@@ -100,6 +122,7 @@
     - restart seaweedfs-filer.service
     - restart seaweedfs-meta-backup.service
   when: seaweedfs_volume_key | length > 0
+  tags: seaweedfs
 
 - name: Copy master grpc cert
   copy:
@@ -111,6 +134,7 @@
     - restart seaweedfs-filer.service
     - restart seaweedfs-meta-backup.service
   when: seaweedfs_master_cert | length > 0
+  tags: seaweedfs
 
 - name: Copy master grpc key
   copy:
@@ -122,6 +146,7 @@
     - restart seaweedfs-filer.service
     - restart seaweedfs-meta-backup.service
   when: seaweedfs_master_key | length > 0
+  tags: seaweedfs
 
 - name: Copy filer grpc cert
   copy:
@@ -133,6 +158,7 @@
     - restart seaweedfs-filer.service
     - restart seaweedfs-meta-backup.service
   when: seaweedfs_filer_cert | length > 0
+  tags: seaweedfs
 
 - name: Copy filer grpc key
   copy:
@@ -144,6 +170,7 @@
     - restart seaweedfs-filer.service
     - restart seaweedfs-meta-backup.service
   when: seaweedfs_filer_key | length > 0
+  tags: seaweedfs
 
 - name: Copy client grpc cert
   copy:
@@ -155,6 +182,7 @@
     - restart seaweedfs-filer.service
     - restart seaweedfs-meta-backup.service
   when: seaweedfs_client_cert | length > 0
+  tags: seaweedfs
 
 - name: Copy client grpc key
   copy:
@@ -166,6 +194,7 @@
     - restart seaweedfs-filer.service
     - restart seaweedfs-meta-backup.service
   when: seaweedfs_client_key | length > 0
+  tags: seaweedfs
 
 - name: Copy security.toml
   template:
@@ -177,3 +206,4 @@
     - restart seaweedfs-volume.service
     - restart seaweedfs-filer.service
     - restart seaweedfs-meta-backup.service
+  tags: seaweedfs

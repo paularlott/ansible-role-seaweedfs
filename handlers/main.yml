@@ -30,3 +30,15 @@
     state: restarted
     daemon_reload: true
   when: groups['seaweedfs_meta_backups'] is defined and inventory_hostname in groups['seaweedfs_meta_backups'] and seaweedfs_backup_filer_toml is defined
+
+- name: restart pvedaemon.service
+  systemd:
+    name: pvedaemon.service
+    state: restarted
+    daemon_reload: true
+
+- name: restart pvestatd.service
+  systemd:
+    name: pvestatd.service
+    state: restarted
+    daemon_reload: true

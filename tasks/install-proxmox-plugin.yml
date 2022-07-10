@@ -1,0 +1,24 @@
+---
+
+##
+# Install / upgrade SeaweedFS proxmox plugin
+##
+
+- name: Ensure /usr/share/perl5/PVE/Storage/Custom/ exists
+  file:
+    path: "/usr/share/perl5/PVE/Storage/Custom/"
+    recurse: true
+    state: directory
+  tags: seaweedfs
+
+- name: Copy plugin
+  copy:
+    src: "SeaweedFSPlugin.pm"
+    dest: "/usr/share/perl5/PVE/Storage/Custom/"
+    owner: "root"
+    group: "root"
+    mode: 0644
+  notify:
+    - restart pvedaemon.service
+    - restart pvestatd.service
+  tags: seaweedfs

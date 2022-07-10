@@ -12,6 +12,7 @@
     owner: "{{ seaweedfs_user | default('root') }}"
     mode: "700"
   with_items: "{{ seaweedfs_volume_path }}"
+  tags: seaweedfs
 
 - name: Copy seaweedfs-volume.service
   template:
@@ -20,6 +21,7 @@
     mode: 0444
   notify:
     - restart seaweedfs-volume.service
+  tags: seaweedfs
 
 - name: Enable seaweedfs-volume.service
   systemd:
@@ -27,3 +29,4 @@
     enabled: true
     state: started
     daemon_reload: true
+  tags: seaweedfs
