@@ -4,7 +4,7 @@
 # Defaults for SeaweedFS
 ##
 
-seaweedfs_version: 3.17
+seaweedfs_version: 3.18
 seaweedfs_user: seaweedfs
 seaweedfs_group: seaweedfs
 
@@ -21,16 +21,16 @@ seaweedfs_volume_path:
 #  - ssd
 
 # Maintenance scripts to run on master
-seaweedfs_maintenance_scripts:
-  - lock
-  - ec.encode -fullPercent=95 -quietFor=1h
-  - ec.rebuild -force
-  - ec.balance -force
-  - volume.deleteEmpty -quietFor=24h -force
-  - volume.balance -force
-  - volume.fix.replication
-  - s3.clean.uploads -timeAgo=24h
-  - unlock
+#seaweedfs_maintenance_scripts:
+#  - lock
+#  - ec.encode -fullPercent=95 -quietFor=1h
+#  - ec.rebuild -force
+#  - ec.balance -force
+#  - volume.deleteEmpty -quietFor=24h -force
+#  - volume.balance -force
+#  - volume.fix.replication
+#  - s3.clean.uploads -timeAgo=24h
+#  - unlock
 
 seaweedfs_maintenance_sleep_minutes: 17
 

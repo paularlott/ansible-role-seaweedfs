@@ -1,8 +1,10 @@
 [master.maintenance]
+{% if seaweedfs_maintenance_scripts is defined %}
 scripts = """
 {{ seaweedfs_maintenance_scripts | join('\n')}}
 """
 sleep_minutes = {{ seaweedfs_maintenance_sleep_minutes }}
+{% endif %}
 
 [master.sequencer]
 type = "raft"     # Choose [raft|snowflake] type for storing the file id sequence
