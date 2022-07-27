@@ -20,6 +20,7 @@
     mode: 0444
   notify:
     - restart seaweedfs-master.service
+    - wait for seaweedfs-master.service
   tags: seaweedfs
 
 - name: Copy seaweedfs-master.service
@@ -29,6 +30,7 @@
     mode: 0444
   notify:
     - restart seaweedfs-master.service
+    - wait for seaweedfs-master.service
   tags: seaweedfs
 
 - name: Enable seaweedfs-master.service

@@ -21,6 +21,7 @@
     mode: 0444
   notify:
     - restart seaweedfs-filer.service
+    - wait for seaweedfs-filer.service
   when: seaweedfs_filer_toml is defined
   tags: seaweedfs
 
@@ -31,6 +32,7 @@
     mode: 0444
   notify:
     - restart seaweedfs-filer.service
+    - wait for seaweedfs-filer.service
   when: seaweedfs_s3_json is defined
   tags: seaweedfs
 
@@ -41,6 +43,7 @@
     mode: 0444
   notify:
     - restart seaweedfs-filer.service
+    - wait for seaweedfs-filer.service
   tags: seaweedfs
 
 - name: Enable seaweedfs-filer.service

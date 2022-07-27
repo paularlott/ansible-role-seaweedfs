@@ -21,6 +21,7 @@
     mode: 0444
   notify:
     - restart seaweedfs-volume.service
+    - wait for seaweedfs-volume.service
   tags: seaweedfs
 
 - name: Enable seaweedfs-volume.service

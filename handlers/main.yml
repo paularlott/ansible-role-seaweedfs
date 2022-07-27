@@ -6,7 +6,12 @@
     state: restarted
     daemon_reload: true
   throttle: 1
-  when: groups['seaweedfs_masters'] is defined and inventory_hostname in groups['seaweedfs_masters']
+
+- name: wait for seaweedfs-master.service
+  wait_for:
+    port: "{{ seaweedfs_master_port | int }}"
+    delay: 30
+    timeout: 60
 
 - name: restart seaweedfs-volume.service
   systemd:
@@ -14,7 +19,12 @@
     state: restarted
     daemon_reload: true
   throttle: 1
-  when: groups['seaweedfs_volumes'] is defined and inventory_hostname in groups['seaweedfs_volumes']
+
+- name: wait for seaweedfs-volume.service
+  wait_for:
+    port: "{{ seaweedfs_volume_port | int }}"
+    delay: 5
+    timeout: 60
 
 - name: restart seaweedfs-filer.service
   systemd:
@@ -22,14 +32,18 @@
     state: restarted
     daemon_reload: true
   throttle: 1
-  when: groups['seaweedfs_filers'] is defined and inventory_hostname in groups['seaweedfs_filers']
+
+- name: wait for seaweedfs-filer.service
+  wait_for:
+    port: "{{ seaweedfs_filer_port | int }}"
+    delay: 5
+    timeout: 60
 
 - name: restart seaweedfs-meta-backup.service
   systemd:
     name: seaweedfs-meta-backup.service
     state: restarted
     daemon_reload: true
-  when: groups['seaweedfs_meta_backups'] is defined and inventory_hostname in groups['seaweedfs_meta_backups'] and seaweedfs_backup_filer_toml is defined
 
 - name: restart pvedaemon.service
   systemd:
