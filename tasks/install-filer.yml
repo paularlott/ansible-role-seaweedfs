@@ -13,21 +13,19 @@
     mode: "700"
   tags: seaweedfs
 
-# Use memory if filer.toml file not given
 - name: Copy filer.toml
-  template:
-    src: "{{ seaweedfs_filer_toml }}"
+  copy:
+    content: "{{ seaweedfs_filer_toml }}"
     dest: "{{ seaweedfs_etc }}/filer.toml"
     mode: 0444
   notify:
     - restart seaweedfs-filer.service
     - wait for seaweedfs-filer.service
-  when: seaweedfs_filer_toml is defined
   tags: seaweedfs
 
 - name: Copy s3config.json
   template:
-    src: "{{ seaweedfs_s3_json }}"
+    content: "{{ seaweedfs_s3_json }}"
     dest: "{{ seaweedfs_etc }}/s3config.json"
     mode: 0444
   notify:

@@ -13,14 +13,14 @@ Hosts in the seaweedfs_proxmox group will have a custom storage plugin installed
 ## Filers
 
 ### Filers
-`seaweedfs_filer_toml` can be defined to point to a filer.toml file which is then applied to filers.
+`seaweedfs_filer_toml` is the filer.toml which is applied to filers.
 
 ### Meta Backup
-filer meta backup service requires `seaweedfs_backup_filer_toml` be defined and pointing to a valid filer.toml file describing the backup filer.
+filer meta backup service requires `seaweedfs_backup_filer_toml` be defined as a valid filer.toml configuration for the backup filer.
 
 ### S3
 
-If `seaweedfs_s3_json` is defined then the file it points to is copied and used as the config for the S3 interface.
+If `seaweedfs_s3_json` is defined then it is used as the config for the S3 interface.
 
 ## Proxmox Storage plugin
 

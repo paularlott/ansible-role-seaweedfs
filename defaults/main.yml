@@ -84,6 +84,15 @@ seaweedfs_mata_backup_filer: "localhost:{{ seaweedfs_filer_port }}"
 seaweedfs_meta_backup_toml: backup-filer.toml
 seaweedfs_meta_backup_dir: /
 
+# filer.toml configuration
+seaweedfs_filer_toml: |
+  [filer.options]
+  recursive_delete = false
+
+  [leveldb3]
+  enabled = true
+  dir = "{{ seaweedfs_filer_path }}"
+
 # Download location
 seaweedfs_download_url: "https://github.com/chrislusf/seaweedfs/releases/download/{{ seaweedfs_version }}/{{ ansible_system|lower }}_{{ seaweedfs_arch_map[ansible_architecture] }}.tar.gz"
 seaweedfs_arch_map:

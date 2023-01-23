@@ -16,7 +16,7 @@
 # Use memory if filer.toml file not given
 - name: Copy backup-filer.toml
   template:
-    src: "{{ seaweedfs_backup_filer_toml }}"
+    content: "{{ seaweedfs_backup_filer_toml }}"
     dest: "{{ seaweedfs_etc }}/{{ seaweedfs_meta_backup_toml }}"
     mode: 0644
   notify:
