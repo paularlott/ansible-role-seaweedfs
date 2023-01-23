@@ -13,8 +13,7 @@ ExecStart={{ seaweedfs_location }}/weed -logtostderr master \
   -ip {{ seaweedfs_ip }} -ip.bind {{ seaweedfs_bind_ip }} \
   -port {{ seaweedfs_master_port }} -port.grpc 1{{ seaweedfs_master_port }} \
   -mdir={{ seaweedfs_master_path }} -defaultReplication={{ seaweedfs_default_replication }} \
-  -volumeSizeLimitMB={{ seaweedfs_volume_size_limit }} \
-  -peers={{ master_ips }}
+  -volumeSizeLimitMB={{ seaweedfs_volume_size_limit }} {% if groups['seaweedfs_masters'] | length > 1 %} -peers={{ master_ips }}{% endif %}
 
 [Install]
 WantedBy=multi-user.target
