@@ -4,7 +4,7 @@
 # Defaults for SeaweedFS
 ##
 
-seaweedfs_version: "3.57"
+seaweedfs_version: "3.58"
 seaweedfs_user: seaweedfs
 seaweedfs_group: seaweedfs
 
