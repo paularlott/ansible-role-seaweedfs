@@ -13,7 +13,7 @@ ExecStart={{ seaweedfs_location }}/weed -logtostderr volume \
   -ip {{ seaweedfs_ip }} -ip.bind {{ seaweedfs_bind_ip }} \
   -port {{ seaweedfs_volume_port }} -port.grpc 1{{ seaweedfs_volume_port }} \
   -max 0 -index leveldb \
-  -dir {{ seaweedfs_volume_path | join(',') }}{% if seaweedfs_volume_disk is defined %} -disk {{ seaweedfs_volume_disk | join(',') }}{% endif %} \
+  -dir {{ seaweedfs_volume_path | join(',') }}{% if seaweedfs_volume_disk is defined %} -disk {{ seaweedfs_volume_disk }}{% endif %} \
   {% if seaweedfs_datacenter is defined %}-dataCenter={{ seaweedfs_datacenter }} {% endif %}{% if seaweedfs_rack is defined %}-rack={{ seaweedfs_rack }} {% endif %}-mserver={{ master_ips }}
 
 [Install]
