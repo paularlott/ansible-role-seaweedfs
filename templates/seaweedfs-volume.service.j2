@@ -1,5 +1,5 @@
 [Unit]
-Description=SeaweedFS Volume
+Description=SeaweedFS Volume {{ item.tag }}
 After=network.target
 
 [Service]
@@ -7,13 +7,13 @@ Type=simple
 Restart=on-failure
 User=root
 Group=root
-SyslogIdentifier=seaweedfs-volume
+SyslogIdentifier=seaweedfs-volume-{{ item.tag }}
 KillSignal=SIGTERM
 ExecStart={{ seaweedfs_location }}/weed -logtostderr volume \
   -ip {{ seaweedfs_ip }} -ip.bind {{ seaweedfs_bind_ip }} \
-  -port {{ seaweedfs_volume_port }} -port.grpc 1{{ seaweedfs_volume_port }} \
+  -port {{ seaweedfs_volume_port | int + my_idx }} -port.grpc 1{{ seaweedfs_volume_port | int + my_idx }} \
   -max 0 -index leveldb \
-  -dir {{ seaweedfs_volume_path | join(',') }}{% if seaweedfs_volume_disk is defined %} -disk {{ seaweedfs_volume_disk }}{% endif %} \
+  -dir {{ item.path | join(',') }}{% if item.tag is defined %} -disk {{ item.tag }}{% endif %} \
   {% if seaweedfs_datacenter is defined %}-dataCenter={{ seaweedfs_datacenter }} {% endif %}{% if seaweedfs_rack is defined %}-rack={{ seaweedfs_rack }} {% endif %}-mserver={{ master_ips }}
 
 [Install]
