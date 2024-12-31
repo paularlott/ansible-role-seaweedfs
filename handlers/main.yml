@@ -17,17 +17,21 @@
 
 - name: restart seaweedfs-volume.service
   systemd:
-    name: seaweedfs-volume.service
+    name: "seaweedfs-volume-{{ item.tag }}.service"
     state: restarted
     daemon_reload: true
   throttle: 1
+  loop: "{{ seaweedfs_volume_paths }}"
   when: groups['seaweedfs_volumes'] is defined and inventory_hostname in groups['seaweedfs_volumes']
 
 - name: wait for seaweedfs-volume.service
   wait_for:
-    port: "{{ seaweedfs_volume_port | int }}"
+    port: "{{ seaweedfs_volume_port | int + my_idx}}"
     delay: 5
     timeout: 60
+  loop: "{{ seaweedfs_volume_paths }}"
+  loop_control:
+    index_var: my_idx
   when: groups['seaweedfs_volumes'] is defined and inventory_hostname in groups['seaweedfs_volumes']
 
 - name: restart seaweedfs-filer.service

@@ -24,6 +24,9 @@
   loop: "{{ seaweedfs_volume_paths }}"
   loop_control:
     index_var: my_idx
+  notify:
+    - restart seaweedfs-volume.service
+    - wait for seaweedfs-volume.service
   tags: seaweedfs
 
 - name: Enable seaweedfs-volume services
@@ -32,13 +35,5 @@
     enabled: true
     state: started
     daemon_reload: true
-  loop: "{{ seaweedfs_volume_paths }}"
-  tags: seaweedfs
-
-- name: Define service handlers
-  set_fact:
-    "{{ item.tag }}_service_handlers":
-      - restart seaweedfs-volume-{{ item.tag }}.service
-      - wait for seaweedfs-volume-{{ item.tag }}.service
   loop: "{{ seaweedfs_volume_paths }}"
   tags: seaweedfs
