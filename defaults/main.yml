@@ -14,10 +14,10 @@ seaweedfs_master_path: "/var/seaweedfs/master"
 seaweedfs_filer_path: "/var/seaweedfs/filer"
 
 # List of paths to hold volumes
-seaweedfs_volume_path:
-  - /var/seaweedfs/volume
-# Optional list of disk tags, leave undefined if not required
-# seaweedfs_volume_disk: ssd
+seaweedfs_volume_paths:
+  - tag: default
+    path:
+      - /var/seaweedfs/volume1
 
 # Maintenance scripts to run on master
 #seaweedfs_maintenance_scripts:

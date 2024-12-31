@@ -4,30 +4,40 @@
 # Install / upgrade SeaweedFS volume
 ##
 
-- name: Ensure volume path exists
+- name: Ensure volume paths exist
   file:
     path: "{{ item }}"
     recurse: true
     state: directory
     owner: "{{ seaweedfs_user | default('root') }}"
     mode: "700"
-  with_items: "{{ seaweedfs_volume_path }}"
+  with_items: "{{ item.path }}"
+  with_nested:
+    - "{{ seaweedfs_volume_paths }}"
   tags: seaweedfs
 
-- name: Copy seaweedfs-volume.service
+- name: Copy seaweedfs-volume service files
   template:
     src: seaweedfs-volume.service.j2
-    dest: /etc/systemd/system/seaweedfs-volume.service
+    dest: "/etc/systemd/system/seaweedfs-volume-{{ item.tag }}.service"
     mode: 0444
-  notify:
-    - restart seaweedfs-volume.service
-    - wait for seaweedfs-volume.service
+  with_items: "{{ seaweedfs_volume_paths }}"
+  notify: "{{ item.tag }}_service_handlers"
   tags: seaweedfs
 
-- name: Enable seaweedfs-volume.service
+- name: Enable seaweedfs-volume services
   systemd:
-    name: seaweedfs-volume.service
+    name: "seaweedfs-volume-{{ item.tag }}.service"
     enabled: true
     state: started
     daemon_reload: true
+  with_items: "{{ seaweedfs_volume_paths }}"
+  tags: seaweedfs
+
+- name: Define service handlers
+  set_fact:
+    "{{ item.tag }}_service_handlers":
+      - restart seaweedfs-volume-{{ item.tag }}.service
+      - wait for seaweedfs-volume-{{ item.tag }}.service
+  with_items: "{{ seaweedfs_volume_paths }}"
   tags: seaweedfs
