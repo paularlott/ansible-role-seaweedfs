@@ -6,14 +6,14 @@
 
 - name: Ensure volume paths exist
   file:
-    path: "{{ item }}"
+    path: "{{ item.1 }}"
     recurse: true
     state: directory
     owner: "{{ seaweedfs_user | default('root') }}"
     mode: "700"
-  with_items: "{{ item.path }}"
-  with_nested:
+  with_subelements:
     - "{{ seaweedfs_volume_paths }}"
+    - path
   tags: seaweedfs
 
 - name: Copy seaweedfs-volume service files
@@ -21,8 +21,9 @@
     src: seaweedfs-volume.service.j2
     dest: "/etc/systemd/system/seaweedfs-volume-{{ item.tag }}.service"
     mode: 0444
-  with_items: "{{ seaweedfs_volume_paths }}"
-  notify: "{{ item.tag }}_service_handlers"
+  loop: "{{ seaweedfs_volume_paths }}"
+  loop_control:
+    index_var: my_idx
   tags: seaweedfs
 
 - name: Enable seaweedfs-volume services
@@ -31,7 +32,7 @@
     enabled: true
     state: started
     daemon_reload: true
-  with_items: "{{ seaweedfs_volume_paths }}"
+  loop: "{{ seaweedfs_volume_paths }}"
   tags: seaweedfs
 
 - name: Define service handlers
@@ -39,5 +40,5 @@
     "{{ item.tag }}_service_handlers":
       - restart seaweedfs-volume-{{ item.tag }}.service
       - wait for seaweedfs-volume-{{ item.tag }}.service
-  with_items: "{{ seaweedfs_volume_paths }}"
+  loop: "{{ seaweedfs_volume_paths }}"
   tags: seaweedfs
